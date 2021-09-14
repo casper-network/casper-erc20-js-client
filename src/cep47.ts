@@ -20,6 +20,7 @@ import { Some, None } from "ts-results";
 import { CEP47Events, DEFAULT_TTL } from "./constants";
 import * as utils from "./utils";
 import {
+  fromCLMap,
   toCLMap,
   installContract,
   setClient,
@@ -38,14 +39,6 @@ class CEP47Client extends ContractClient {
     paused: string;
     events: string;
   };
-
-  constructor(
-    public nodeAddress: string,
-    public chainName: string,
-    public eventStreamAddress?: string
-  ) {
-    super(nodeAddress, chainName, eventStreamAddress)
-  }
 
   public async install(
     keys: Keys.AsymmetricKey,
@@ -109,19 +102,13 @@ class CEP47Client extends ContractClient {
   }
 
   public async meta() {
-    const res : Array<[CLValue, CLValue]> = await contractSimpleGetter(
+    const map: Array<[CLValue, CLValue]> = await contractSimpleGetter(
       this.nodeAddress,
       this.contractHash!,
       ["meta"]
     );
 
-    // TODO: Refactor
-    const jsMap = new Map();
-
-    for (const [innerKey, value] of res) {
-      jsMap.set(innerKey.value(), value.value());
-    }
-    return jsMap;
+    return fromCLMap(map);
   }
 
   public async totalSupply() {
@@ -164,14 +151,7 @@ class CEP47Client extends ContractClient {
     const maybeValue = result.unwrap();
     const map: Array<[CLValue, CLValue]> = maybeValue.value();
 
-    // TODO: Refactor
-    const jsMap = new Map();
-
-    for (const [innerKey, value] of map) {
-      jsMap.set(innerKey.value(), value.value());
-    }
-
-    return jsMap;
+    return fromCLMap(map);
   }
 
   public async pause(

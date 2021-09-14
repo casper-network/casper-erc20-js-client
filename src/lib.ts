@@ -23,11 +23,13 @@ export const toCLMap = (map: Map<string, string>) => {
   return clMap;
 };
 
-const fromCLMap = (map: Map<CLString, CLString>) => {
+export const fromCLMap = (map: [CLValue, CLValue][]) => {
   const jsMap = new Map();
-  for (const [key, value] of Array.from(map.entries())) {
-    jsMap.set(key.value(), value.value());
+
+  for (const [innerKey, value] of map) {
+    jsMap.set(innerKey.value(), value.value());
   }
+
   return jsMap;
 };
 
