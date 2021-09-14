@@ -26,12 +26,11 @@ import {
   contractSimpleGetter,
   contractCallFn,
 } from "./lib";
+import ContractClient from "./client";
 import { RecipientType, IPendingDeploy, IClassContractCallParams } from "./types";
 
-class CEP47Client {
-  public contractHash?: string;
-  public contractPackageHash?: string;
-  private namedKeys?: {
+class CEP47Client extends ContractClient {
+  protected namedKeys?: {
     balances: string;
     metadata: string;
     ownedTokens: string;
@@ -39,14 +38,14 @@ class CEP47Client {
     paused: string;
     events: string;
   };
-  private isListening = false;
-  private pendingDeploys: IPendingDeploy[] = [];
 
   constructor(
-    private nodeAddress: string,
-    private chainName: string,
-    private eventStreamAddress?: string
-  ) {}
+    public nodeAddress: string,
+    public chainName: string,
+    public eventStreamAddress?: string
+  ) {
+    super(nodeAddress, chainName, eventStreamAddress)
+  }
 
   public async install(
     keys: Keys.AsymmetricKey,
@@ -91,33 +90,6 @@ class CEP47Client {
     this.contractPackageHash = contractPackageHash;
     /* @ts-ignore */
     this.namedKeys = namedKeys;
-  }
-
-  public async contractCall({
-    keys,
-    paymentAmount,
-    entryPoint,
-    runtimeArgs,
-    cb,
-    ttl = DEFAULT_TTL
-  }: IClassContractCallParams) {
-    const deployHash = await contractCallFn({
-      chainName: this.chainName,
-      contractHash: this.contractHash!,
-      entryPoint,
-      paymentAmount,
-      nodeAddress: this.nodeAddress,
-      keys: keys,
-      runtimeArgs,
-      ttl,
-    });
-
-    if (deployHash !== null) {
-      cb && cb(deployHash);
-      return deployHash;
-    } else {
-      throw Error("Invalid Deploy");
-    }
   }
 
   public async name() {
@@ -245,7 +217,6 @@ class CEP47Client {
 
   public async getTokensOf(account: CLPublicKey) {
     const accountHash = Buffer.from(account.toAccountHash()).toString("hex");
-    console.log(this.namedKeys);
     const result = await utils.contractDictionaryGetter(
       this.nodeAddress,
       accountHash,
@@ -497,72 +468,7 @@ class CEP47Client {
       result: any | null
     ) => void
   ): any {
-    if (!this.eventStreamAddress) {
-      throw Error("Please set eventStreamAddress before!");
-    }
-    if (this.isListening) {
-      throw Error(
-        "Only one event listener can be create at a time. Remove the previous one and start new."
-      );
-    }
-    const es = new EventStream(this.eventStreamAddress);
-    this.isListening = true;
-
-    es.subscribe(EventName.DeployProcessed, (value: any) => {
-      const deployHash = value.body.DeployProcessed.deploy_hash;
-
-      const pendingDeploy = this.pendingDeploys.find(
-        (pending) => pending.deployHash === deployHash
-      );
-
-      if (!pendingDeploy) {
-        return;
-      }
-
-      const parsedEvent = utils.parseEvent(
-        { contractPackageHash: this.contractPackageHash!, eventNames, eventsURef: this.namedKeys!.events },
-        value
-      );
-
-      if (parsedEvent.error !== null) {
-        callback(
-          pendingDeploy.deployType,
-          {
-            deployHash,
-            error: parsedEvent.error,
-            success: false,
-          },
-          null
-        );
-      } else {
-        parsedEvent.data.forEach((d: any) =>
-          callback(
-            d.name,
-            { deployHash, error: null, success: true },
-            d.clValue
-          )
-        );
-      }
-
-      this.pendingDeploys = this.pendingDeploys.filter(
-        (pending) => pending.deployHash !== deployHash
-      );
-    });
-
-    es.start();
-
-    return {
-      stopListening: () => {
-        es.unsubscribe(EventName.DeployProcessed);
-        es.stop();
-        this.isListening = false;
-        this.pendingDeploys = [];
-      },
-    };
-  }
-
-  private addPendingDeploy(deployType: CEP47Events, deployHash: string) {
-    this.pendingDeploys = [...this.pendingDeploys, { deployHash, deployType }];
+    return this.handleEvents(eventNames, callback);
   }
 }
 
