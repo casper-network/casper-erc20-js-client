@@ -68,7 +68,7 @@ class ContractClient {
     }
   }
 
-  protected addPendingDeploy(deployType: CEP47Events, deployHash: string) {
+  protected addPendingDeploy(deployType: any, deployHash: string) {
     this.pendingDeploys = [...this.pendingDeploys, { deployHash, deployType }];
   }
 

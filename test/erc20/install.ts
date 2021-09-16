@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config();
-import { CEP47Client, utils, constants } from "../src";
-import { parseTokenMeta, sleep, getDeploy } from "./utils";
+import { ERC20Client, utils, constants } from "../../src";
+import { sleep, getDeploy } from "../utils";
 
 import {
   CLValueBuilder,
@@ -18,19 +18,10 @@ const {
   MASTER_KEY_PAIR_PATH,
   TOKEN_NAME,
   TOKEN_SYMBOL,
-  CONTRACT_HASH,
+  TOKEN_DECIMALS,
+  TOKEN_SUPPLY,
   INSTALL_PAYMENT_AMOUNT,
-  MINT_ONE_PAYMENT_AMOUNT,
-  MINT_COPIES_PAYMENT_AMOUNT,
-  BURN_ONE_PAYMENT_AMOUNT,
-  MINT_ONE_META_SIZE,
-  MINT_COPIES_META_SIZE,
-  MINT_COPIES_COUNT,
-  MINT_MANY_META_SIZE,
-  MINT_MANY_META_COUNT,
 } = process.env;
-
-const TOKEN_META = new Map(parseTokenMeta(process.env.TOKEN_META!));
 
 const KEYS = Keys.Ed25519.parseKeyFiles(
   `${MASTER_KEY_PAIR_PATH}/public_key.pem`,
@@ -38,17 +29,18 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
 );
 
 const test = async () => {
-  const cep47 = new CEP47Client(
+  const erc20 = new ERC20Client(
     NODE_ADDRESS!,
     CHAIN_NAME!,
     EVENT_STREAM_ADDRESS!
   );
 
-  const installDeployHash = await cep47.install(
+  const installDeployHash = await erc20.install(
     KEYS,
     TOKEN_NAME!,
     TOKEN_SYMBOL!,
-    TOKEN_META!,
+    TOKEN_DECIMALS!,
+    TOKEN_SUPPLY!,
     INSTALL_PAYMENT_AMOUNT!,
     WASM_PATH!
   );

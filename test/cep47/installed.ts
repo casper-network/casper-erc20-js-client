@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config();
-import { CEP47Client, utils, constants } from "../src";
-import { parseTokenMeta, sleep, getDeploy } from "./utils";
+import { CEP47Client, utils, constants } from "../../src";
+import { parseTokenMeta, sleep, getDeploy } from "../utils";
 
 import {
   CLValueBuilder,

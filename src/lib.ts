@@ -1,6 +1,9 @@
 import {
   CLValueBuilder,
   CLTypeBuilder,
+  CLPublicKey,
+  CLKey,
+  CLAccountHash,
   Keys,
   RuntimeArgs,
   CasperClient,
@@ -9,8 +12,16 @@ import {
   DeployUtil,
 } from "casper-js-sdk";
 
-import { IContractCallParams } from "./types";
+import { IContractCallParams, RecipientType } from "./types";
 import * as utils from "./utils";
+
+export const createRecipientAddress = (recipient: RecipientType): CLKey => {
+  if (recipient instanceof CLPublicKey) {
+    return new CLKey(new CLAccountHash(recipient.toAccountHash()));
+  } else {
+    return new CLKey(recipient);
+  }
+};
 
 export const toCLMap = (map: Map<string, string>) => {
   const clMap = CLValueBuilder.map([

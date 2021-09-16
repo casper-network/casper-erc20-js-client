@@ -26,6 +26,7 @@ import {
   setClient,
   contractSimpleGetter,
   contractCallFn,
+  createRecipientAddress
 } from "./lib";
 import ContractClient from "./client";
 import { RecipientType, IPendingDeploy, IClassContractCallParams } from "./types";
@@ -219,7 +220,7 @@ class CEP47Client extends ContractClient {
       : CLValueBuilder.option(None, CLTypeBuilder.string());
 
     const runtimeArgs = RuntimeArgs.fromMap({
-      recipient: utils.createRecipientAddress(recipient),
+      recipient: createRecipientAddress(recipient),
       token_id: tokenId,
       token_meta: toCLMap(meta),
     });
@@ -251,7 +252,7 @@ class CEP47Client extends ContractClient {
 
     const runtimeArgs = RuntimeArgs.fromMap({
       count: CLValueBuilder.u32(count),
-      recipient: utils.createRecipientAddress(recipient),
+      recipient: createRecipientAddress(recipient),
       token_ids: tokenIds,
       token_meta: toCLMap(meta),
     });
@@ -289,7 +290,7 @@ class CEP47Client extends ContractClient {
       : CLValueBuilder.option(None, CLTypeBuilder.list(CLTypeBuilder.string()));
 
     const runtimeArgs = RuntimeArgs.fromMap({
-      recipient: utils.createRecipientAddress(recipient),
+      recipient: createRecipientAddress(recipient),
       token_ids: tokenIds,
       token_metas: CLValueBuilder.list(clMetas),
     });
@@ -334,7 +335,7 @@ class CEP47Client extends ContractClient {
     ttl = DEFAULT_TTL
   ) {
     const runtimeArgs = RuntimeArgs.fromMap({
-      owner: utils.createRecipientAddress(owner),
+      owner: createRecipientAddress(owner),
       token_id: CLValueBuilder.string(tokenId),
     });
 
@@ -357,7 +358,7 @@ class CEP47Client extends ContractClient {
   ) {
     const clTokenIds = tokenIds.map(CLValueBuilder.string);
     const runtimeArgs = RuntimeArgs.fromMap({
-      owner: utils.createRecipientAddress(owner),
+      owner: createRecipientAddress(owner),
       token_ids: CLValueBuilder.list(clTokenIds),
     });
 
@@ -379,11 +380,11 @@ class CEP47Client extends ContractClient {
     ttl = DEFAULT_TTL
   ) {
     const runtimeArgs = RuntimeArgs.fromMap({
-      recipient: utils.createRecipientAddress(recipient),
+      recipient: createRecipientAddress(recipient),
       token_id: CLValueBuilder.string(tokenId),
     });
 
-    const deployHash = await this.contractCall({
+    return await this.contractCall({
       entryPoint: "transfer_token",
       keys,
       paymentAmount,
@@ -402,7 +403,7 @@ class CEP47Client extends ContractClient {
   ) {
     const clTokenIds = tokenIds.map(CLValueBuilder.string);
     const runtimeArgs = RuntimeArgs.fromMap({
-      recipient: utils.createRecipientAddress(recipient),
+      recipient: createRecipientAddress(recipient),
       token_ids: CLValueBuilder.list(clTokenIds),
     });
 
@@ -423,7 +424,7 @@ class CEP47Client extends ContractClient {
     ttl = DEFAULT_TTL
   ) {
     const runtimeArgs = RuntimeArgs.fromMap({
-      recipient: utils.createRecipientAddress(recipient),
+      recipient: createRecipientAddress(recipient),
     });
 
     return await this.contractCall({
@@ -451,5 +452,6 @@ class CEP47Client extends ContractClient {
     return this.handleEvents(eventNames, callback);
   }
 }
+
 
 export default CEP47Client;

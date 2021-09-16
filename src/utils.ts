@@ -23,14 +23,6 @@ import { CEP47Events } from "./constants";
 export const camelCased = (myString: string) =>
   myString.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
 
-export const createRecipientAddress = (recipient: RecipientType): CLKey => {
-  if (recipient instanceof CLPublicKey) {
-    return new CLKey(new CLAccountHash(recipient.toAccountHash()));
-  } else {
-    return new CLKey(recipient);
-  }
-};
-
 /**
  * Returns an ECC key pair mapped to an NCTL faucet account.
  * @param pathToFaucet - Path to NCTL faucet directory.
