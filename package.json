@@ -1,0 +1,31 @@
+{
+  "name": "casper-contract-js-client",
+  "version": "0.4.3",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test:cep47:install": "ts-node test/cep47/install.ts",
+    "test:cep47:installed": "ts-node test/cep47/installed.ts",
+    "test:erc20:install": "ts-node test/erc20/install.ts",
+    "test:erc20:installed": "ts-node test/erc20/installed.ts",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build && npm run test",
+    "build": "tsc",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "prettier": "^2.3.2",
+    "ts-node": "^10.1.0",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.3"
+  },
+  "dependencies": {
+    "casper-js-sdk": "2.4.1",
+    "ts-results": "^3.3.0"
+  }
+}
