@@ -36,7 +36,11 @@ const test = async () => {
     EVENT_STREAM_ADDRESS!
   );
 
+  console.log('Test init.');
+
   await sleep(5 * 1000);
+
+  console.log('... getting Account info');
 
   let accountInfo = await utils.getAccountInfo(NODE_ADDRESS!, KEYS.publicKey);
 
