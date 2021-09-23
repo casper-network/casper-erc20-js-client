@@ -58,7 +58,7 @@ const test = async () => {
 
   const contractHash = await utils.getAccountNamedKeyValue(
     accountInfo,
-    `${TOKEN_NAME!}_contract`
+    `erc20_token_contract`
   );
 
   console.log(`... Contract Hash: ${contractHash}`);
