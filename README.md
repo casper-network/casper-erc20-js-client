@@ -1,3 +1,4 @@
+This repo is archived. For current version of `erc-20-client` please look into [casper-js-clients](https://github.com/casper-network/casper-contracts-js-clients)
 # casper-erc20-js-client
 
 ## Test ERC20 contract
